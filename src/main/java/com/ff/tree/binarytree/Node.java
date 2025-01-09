@@ -22,4 +22,18 @@ public class Node <E>{
     public Boolean haveTwoChildren(){
         return left != null && right != null;
     }
+
+    public Boolean isLeftChild(){
+        if (parents == null) {
+            return false;
+        }
+        return parents.left == this;
+    }
+
+    public Boolean isRightChild(){
+        if (parents == null) {
+            return false;
+        }
+        return parents.right == this;
+    }
 }

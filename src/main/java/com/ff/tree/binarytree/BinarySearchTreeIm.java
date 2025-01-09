@@ -26,13 +26,13 @@ public class BinarySearchTreeIm<E> implements BinarySearchTree<E>{
     }
 
     @Override
-    public void add(E element) {
+    public Node<E> add(E element) {
         elementNotNullCheck(element);
 
         if (root == null) {
             root = new Node<E>(element, null);
             size ++;
-            return;
+            return root;
         }
 
         size++;
@@ -49,7 +49,7 @@ public class BinarySearchTreeIm<E> implements BinarySearchTree<E>{
                 node = node.left;
             }else{
                 node.element = element;
-                return;
+                return node;
             }
         }
 
@@ -61,6 +61,7 @@ public class BinarySearchTreeIm<E> implements BinarySearchTree<E>{
         }else{
 
         }
+        return newNode;
     }
 
     @Override
@@ -174,7 +175,7 @@ public class BinarySearchTreeIm<E> implements BinarySearchTree<E>{
         return null;
     }
 
-    private void elementNotNullCheck(E element) {
+    void elementNotNullCheck(E element) {
         if (element == null) {
             throw new RuntimeException("element can not be null");
         }
@@ -182,7 +183,7 @@ public class BinarySearchTreeIm<E> implements BinarySearchTree<E>{
 
     private Comparator<E> comparator;
 
-    private int compare(E e1, E e2) {
+    int compare(E e1, E e2) {
         if (comparator == null) {
             return ((Comparable<E>)e1).compareTo(e2);
         }
@@ -193,6 +194,7 @@ public class BinarySearchTreeIm<E> implements BinarySearchTree<E>{
     public void print(){
         if (root == null) {
             System.out.println("empty");
+            return;
         }
 
         // 层次遍历

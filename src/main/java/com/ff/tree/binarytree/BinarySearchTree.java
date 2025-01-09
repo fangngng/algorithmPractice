@@ -8,7 +8,7 @@ public interface BinarySearchTree<E> {
 
     void clear();
 
-    void add(E element);
+    Node<E> add(E element);
 
     void remove(Node<E> node);
 
