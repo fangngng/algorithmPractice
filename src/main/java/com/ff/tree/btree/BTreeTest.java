@@ -24,6 +24,9 @@ public class BTreeTest {
         bTree.add(18);
         bTree.print();
         System.out.println("add end-----------------------");
+        bTree.remove(22);
+        bTree.print();
+        System.out.println("22-----------------------");
         bTree.remove(1);
         bTree.print();
         System.out.println("1-----------------------");
