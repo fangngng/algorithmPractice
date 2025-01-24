@@ -142,7 +142,7 @@ public class BinarySearchTreeIm<E> implements BinarySearchTree<E>{
             }
             return p;
         }else{
-            // 不存在右子树，则先驱节点在父节点中
+            // 不存在右子树，则后继节点在父节点中
             while (node.parents != null && node == node.parents.right) {
                 // 找到父节点不为空，节点为父节点的左子树，则父节点为后继节点
                 node = node.parents;
