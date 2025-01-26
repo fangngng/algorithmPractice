@@ -78,6 +78,7 @@ public class RedBlackTree<E extends Comparable<E>> {
      * @param node
      */
     public void delete(RBNode<E> node) {
+        // 两个子节点
         if (node.left != null && node.right != null) {
             // 左右子节点都存在，则找到后继节点，替换值，然后删除后继节点
             RBNode<E> successor = successor(node);
@@ -86,6 +87,31 @@ public class RedBlackTree<E extends Comparable<E>> {
         }
 
         // todo
+        RBNode<E> replace = node.left != null? node.left: node.right;
+        if(replace != null){
+            // 只有一个子节点，则将子节点连接到父节点
+            replace.parents = node.parents;
+            if(node.parents == null){
+                root = replace;
+            } else if (node == node.parents.left) {
+                node.parents.left = replace;
+            }else{
+                node.parents.right = replace;
+            }
+
+            node.left = node.right = node.parents = null;
+
+            if (node.black == true) {
+                fixAfterDelete(replace);
+            }
+        } else if (node.parents == null) {
+            // 没有子节点，也没有父节点，只有root节点，直接删除
+            root = null;
+        }else {
+            // 没有子节点
+
+        }
+
 
     }
 
@@ -117,7 +143,11 @@ public class RedBlackTree<E extends Comparable<E>> {
         }
     }
 
-    private void fixAfterDelete(){
+    /**
+     * 删除后，修复树平衡
+     * @param node
+     */
+    private void fixAfterDelete(RBNode<E> node){
 
     }
 
