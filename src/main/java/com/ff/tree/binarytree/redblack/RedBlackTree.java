@@ -1,5 +1,10 @@
 package com.ff.tree.binarytree.redblack;
 
+import com.ff.tree.binarytree.Node;
+
+import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
+
 /**
  * 红黑树
  */
@@ -33,9 +38,9 @@ public class RedBlackTree<E extends Comparable<E>> {
             cur = x;
             int cmp = node.element.compareTo(x.element);
             if (cmp < 0) {
-                cur = x.left;
+                x = x.left;
             }else{
-                cur = x.right;
+                x = x.right;
             }
         }
 
@@ -109,10 +114,19 @@ public class RedBlackTree<E extends Comparable<E>> {
             root = null;
         }else {
             // 没有子节点
+            if (node.black == true) {
+                fixAfterDelete(node);
+            }
 
+            if (node.parents != null) {
+                if (node == node.parents.left) {
+                    node.parents.left = null;
+                }else{
+                    node.parents.right = null;
+                }
+                node.parents = null;
+            }
         }
-
-
     }
 
     /**
@@ -148,7 +162,103 @@ public class RedBlackTree<E extends Comparable<E>> {
      * @param node
      */
     private void fixAfterDelete(RBNode<E> node){
+        while (node != root && node.black) {
+            // 如果是左节点
+            if (node == leftOf(parentOf(node))) {
+                RBNode<E> sib = rightOf(parentOf(node));
 
+                // 如果兄弟节点是红色
+                if (!sib.black) {
+                    // 兄弟节点变黑，父节点左旋
+                    // 将兄弟节点指向更新下（因为左旋后，兄弟节点变了）
+                    sib.black = true;
+                    parentOf(node).black = false;
+                    leftRotate(parentOf(node));
+                    sib = rightOf(parentOf(node));
+                }
+
+                // 如果兄弟节点的左右子节点都是黑色，则此子树内无法平衡，向上走
+                if (isBlack(leftOf(sib)) && isBlack(rightOf(sib))) {
+                    // 兄弟节点变红，向上平衡
+                    sib.black=false;
+                    node = parentOf(node);
+                }else{
+                    // 如果兄弟节点的右节点是黑色，则左节点是红色。先将左节点转移到兄弟节点。
+                    if (rightOf(sib).black == true) {
+                        // 对兄弟节点右旋，兄弟节点变红，左节点变黑
+                        sib.black = false;
+                        leftOf(sib).black = true;
+                        rightRotate(sib);
+                        sib = rightOf(parentOf(node));
+                    }
+
+                    // 兄弟节点颜色变为父节点颜色，父节点变黑，兄弟右子节点变黑，然后父节点左旋
+                    sib.black = parentOf(node).black;
+                    parentOf(node).black = true;
+                    rightOf(sib).black = true;
+                    leftRotate(parentOf(node));
+
+                    // 结束
+                    node = root;
+                }
+            }else{
+                // 所有操作镜像
+                RBNode<E> sib = leftOf(parentOf(node));
+
+                // 如果兄弟节点是红色
+                if (!sib.black) {
+                    // 兄弟节点变黑，父节点左旋
+                    // 将兄弟节点指向更新下（因为左旋后，兄弟节点变了）
+                    sib.black = true;
+                    parentOf(node).black = false;
+                    rightRotate(parentOf(node));
+                    sib = leftOf(parentOf(node));
+                }
+
+                // 如果兄弟节点的左右子节点都是黑色，则此子树内无法平衡，向上走
+                if (isBlack(leftOf(sib)) && isBlack(rightOf(sib))) {
+                    // 兄弟节点变红，向上平衡
+                    sib.black = false;
+                    node = parentOf(node);
+                } else {
+                    // 如果兄弟节点的右节点是黑色，则左节点是红色。先将左节点转移到兄弟节点。
+                    if (leftOf(sib).black == true) {
+                        // 对兄弟节点右旋，兄弟节点变红，左节点变黑
+                        sib.black = false;
+                        rightOf(sib).black = true;
+                        leftRotate(sib);
+                        sib = leftOf(parentOf(node));
+                    }
+
+                    // 兄弟节点颜色变为父节点颜色，父节点变黑，兄弟右子节点变黑，然后父节点左旋
+                    sib.black = parentOf(node).black;
+                    parentOf(node).black = true;
+                    leftOf(sib).black = true;
+                    rightRotate(parentOf(node));
+
+                    // 结束
+                    node = root;
+                }
+            }
+        }
+
+        node.black = true;
+    }
+
+    private boolean isBlack(RBNode<E> node){
+        return node == null?true:node.black;
+    }
+
+    private RBNode<E> leftOf(RBNode<E> node) {
+        return node == null?null:node.left;
+    }
+
+    private RBNode<E> rightOf(RBNode<E> node) {
+        return node == null ? null : node.right;
+    }
+
+    private RBNode<E> parentOf(RBNode<E> node) {
+        return node == null?null:node.parents;
     }
 
     /**
@@ -221,9 +331,6 @@ public class RedBlackTree<E extends Comparable<E>> {
         return !node.black;
     }
 
-    private boolean isBlack(RBNode<E> node) {
-        return node.black;
-    }
 
     private void setBlack(RBNode<E> node) {
         node.black = true;
@@ -271,6 +378,27 @@ public class RedBlackTree<E extends Comparable<E>> {
 
         left.right = node;
         node.parents = left;
+    }
+
+    public void print(){
+        if (root == null) {
+            System.out.println("empty");
+            return;
+        }
+
+        // 层次遍历
+        Queue<RBNode<E>> q = new LinkedBlockingQueue<>(size);
+        q.offer(root);
+        while (!q.isEmpty()) {
+            RBNode<E> poll = q.poll();
+            System.out.println(poll.element+":"+(poll.black?"black":"red"));
+            if (poll.left != null) {
+                q.offer(poll.left);
+            }
+            if (poll.right != null) {
+                q.offer(poll.right);
+            }
+        }
     }
 
 }
