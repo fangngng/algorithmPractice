@@ -19,5 +19,10 @@ public class RedBlackTreeTest {
         redBlackTree.add(11);
         redBlackTree.add(12);
         redBlackTree.print();
+        System.out.println("----------------------------------");
+
+        redBlackTree.delete(redBlackTree.find(8));
+        redBlackTree.print();
+        System.out.println("----------------------------------");
     }
 }

@@ -1,6 +1,7 @@
 package com.ff.tree.binarytree.redblack;
 
 import com.ff.tree.binarytree.Node;
+import jdk.nashorn.internal.ir.ReturnNode;
 
 import java.util.Queue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -24,9 +25,10 @@ public class RedBlackTree<E extends Comparable<E>> {
      * @return
      */
     public boolean add(E element){
+        size++;
         if (root == null) {
             root = new RBNode<>(element, null);
-            size++;
+            root.black = true;
             return true;
         }
 
@@ -46,20 +48,31 @@ public class RedBlackTree<E extends Comparable<E>> {
 
         node.parents = cur;
 
-        if (cur == null) {
-            root = node;
+        int cmp = node.element.compareTo(cur.element);
+        if (cmp < 0) {
+            cur.left = node;
         }else{
-            int cmp = node.element.compareTo(cur.element);
-            if (cmp < 0) {
-                cur.left = node;
-            }else{
-                cur.right = node;
-            }
+            cur.right = node;
         }
 
         balanced(node);
 
         return false;
+    }
+
+    public RBNode<E> find(E element){
+        RBNode<E> x = this.root;
+        while (x != null) {
+            int cmp = element.compareTo(x.element);
+            if (cmp < 0) {
+                x = x.left;
+            }else if(cmp == 0){
+                return x;
+            }else{
+                x = x.right;
+            }
+        }
+        return null;
     }
 
     /**
@@ -91,7 +104,6 @@ public class RedBlackTree<E extends Comparable<E>> {
             node = successor;
         }
 
-        // todo
         RBNode<E> replace = node.left != null? node.left: node.right;
         if(replace != null){
             // 只有一个子节点，则将子节点连接到父节点
@@ -141,11 +153,14 @@ public class RedBlackTree<E extends Comparable<E>> {
         RBNode<E> cur = node.right;
         if(cur != null) {
             // 如果存在右子树，则后继节点在右子树上
+            RBNode<E> p = cur;
             while (cur != null) {
+                p = cur;
                 cur = cur.left;
             }
-            return cur;
+            return p;
         }else{
+            cur = node;
             // 如果不存在右子树，则后继节点那在父节点上（比当前节点大，那必须当前节点是父节点的左子节点）
             while (cur.parents != null && cur == cur.parents.right) {
                 // 如果当前节点存在父节点，且当前节点是父节点的右子节点，那说明父节点小于当前节点，不符合，需要继续往上寻找
@@ -277,6 +292,11 @@ public class RedBlackTree<E extends Comparable<E>> {
         while (((parent = node.parents) != null) && isRed(parent)){
             grand = parent.parents;
 
+            if (grand == null) {
+                parent.black = true;
+                return;
+            }
+
             if (parent == grand.left) {
                 RBNode<E> uncle = grand.right;
 
@@ -284,6 +304,9 @@ public class RedBlackTree<E extends Comparable<E>> {
                 if (uncle != null && isRed(uncle)) {
                     setBlack(parent);
                     setRed(grand);
+                    if (grand == root) {
+                        grand.black = true;
+                    }
                     node = grand;
                     continue;
                 }
@@ -306,7 +329,11 @@ public class RedBlackTree<E extends Comparable<E>> {
                 // case 2.1
                 if (uncle != null && isRed(uncle)) {
                     setBlack(parent);
+                    setBlack(uncle);
                     setRed(grand);
+                    if (grand == root) {
+                        grand.black = true;
+                    }
                     node = grand;
                     continue;
                 }
