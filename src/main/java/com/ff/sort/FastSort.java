@@ -8,12 +8,13 @@ import java.util.Arrays;
 public class FastSort {
 
     public static void main(String[] args) {
-        int[] data = new int[]{47,50,48};
+//        int[] data = new int[]{47,50,48};
+        Integer[] data = new Integer[]{47, 50, 48};
         fastSort(data, 0, data.length-1);
         System.out.println(Arrays.toString(data));
     }
 
-    public static int[] fastSort(int[] data, int left, int right){
+    public static <E extends Comparable<E>> E[] fastSort(E[] data, int left, int right){
         if (right - left < 1) {
             return data;
         }
@@ -22,7 +23,7 @@ public class FastSort {
         int pivot = left;
         int leftIndex = pivot + 1;
         for (int i = left + 1; i <= right; i++) {
-            if (data[i] < data[pivot]) {
+            if (data[i].compareTo(data[pivot]) < 0) {
                 swap(data, i, leftIndex);
                 leftIndex++;
             }
@@ -38,8 +39,8 @@ public class FastSort {
         return data;
     }
 
-    private static void swap(int[] data, int a, int b) {
-        int temp = data[a];
+    private static <E> void swap(E[] data, int a, int b) {
+        E temp = data[a];
         data[a] = data[b];
         data[b] = temp;
     }

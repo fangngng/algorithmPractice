@@ -9,12 +9,12 @@ public class BucketSort {
 
     public static void main(String[] args) {
 
-        int[] data = new int[]{3,44,38,47,15,36,26,27,2,46,4,19,50,48};
+        Integer[] data = new Integer[]{3,44,38,47,15,36,26,27,2,46,4,19,50,48};
         bucketSort(data, 5);
         System.out.println(Arrays.toString(data));
     }
 
-    public static void bucketSort(int[] data, int bucketSize) {
+    public static void bucketSort(Integer[] data, int bucketSize) {
         int defaultSize = 5;
         if (bucketSize <= 0) {
             bucketSize = defaultSize;
@@ -33,8 +33,8 @@ public class BucketSort {
 
         int bucketCount = (max-min) / bucketSize + 1;
         // 桶是二维数组
-        int[][] bucket = new int[bucketCount][data.length];
-        int[] bucketDataSize = new int[bucketCount];
+        Integer[][] bucket = new Integer[bucketCount][data.length];
+        Integer[] bucketDataSize = new Integer[bucketCount];
 
 
         // 将数据分布到桶中，并记录每个桶中元素数量
