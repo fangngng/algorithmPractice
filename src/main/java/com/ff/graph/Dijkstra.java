@@ -71,6 +71,5 @@ public class Dijkstra {
 
         System.out.println("vs:" + vs);
         System.out.println(Arrays.toString(dist));
-
     }
 }
